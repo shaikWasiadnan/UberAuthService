@@ -1,7 +1,6 @@
 package com.example.UberAuthService.controllers;
 
-import com.example.UberAuthService.dtos.passengerDetailsDTO;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.UberAuthService.dtos.passengersignuprequestDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,7 +13,7 @@ public class AuthController {
 
 //  for posting passenger details
     @PostMapping("/passenger")
-    public ResponseEntity<?> passengerDetails(@RequestBody passengerDetailsDTO details){
+    public ResponseEntity<?> passengerDetails(@RequestBody passengersignuprequestDTO details){
         return null;
     }
 }

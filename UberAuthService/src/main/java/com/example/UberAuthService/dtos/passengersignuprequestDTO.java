@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @NoArgsConstructor
 @AllArgsConstructor
 @Component
-public class passengerDetailsDTO {
+public class passengersignuprequestDTO {
     private String name;
     private String email;
     private  String phoneNumber;
