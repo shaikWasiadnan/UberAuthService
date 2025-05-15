@@ -1,7 +1,6 @@
 package com.example.UberAuthService.services;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
@@ -23,16 +22,50 @@ public class JWTService implements CommandLineRunner {
     @Value(("${jwt.secret}"))
     private String SECRET;
 
-    public String generateJWTToken(Map<String, Object> payload, String username) {
-        SecretKey key = Keys.hmacShaKeyFor(SECRET.getBytes());
+    private SecretKey key;
+
+    public String generateJWTToken(Map<String, Object> payload, String email) {
+        key = Keys.hmacShaKeyFor(SECRET.getBytes());
 
         return Jwts.builder()
                 .setClaims(payload)                   // Custom payload data (like roles, id)
-                .setSubject(username)                // Main identity info (username/email)
+                .setSubject(email)                // Main identity info (username/email)
                 .setIssuedAt(new Date())             // Current time
                 .setExpiration(new Date(System.currentTimeMillis() + expiry)) // Expiration
                 .signWith(SignatureAlgorithm.HS256, key) // Sign with key + algorithm
                 .compact();                          // Generate token
+    }
+
+
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token); // Will throw exception if invalid
+            return true;
+        } catch (ExpiredJwtException e) {
+            System.out.println("Token expired");
+        } catch (UnsupportedJwtException e) {
+            System.out.println("Unsupported JWT");
+        } catch (MalformedJwtException e) {
+            System.out.println("Malformed JWT");
+        } catch (SignatureException e) {
+            System.out.println("Invalid signature");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Illegal argument");
+        }
+        return false;
+    }
+
+
+    public String emailAddress(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
     }
 
     @Override
@@ -42,5 +75,6 @@ public class JWTService implements CommandLineRunner {
         mp.put("phone","999999");
         String result=generateJWTToken(mp,"adnan");
         System.out.println("Generated id is: "+result);
+        System.out.println("valiid? : "+validateToken(result));
     }
 }
